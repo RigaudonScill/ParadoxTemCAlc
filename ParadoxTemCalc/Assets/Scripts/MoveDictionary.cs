@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace UnityEngine
 {
@@ -73,7 +74,7 @@ public struct Move
     public MoveElement synergyWith;
     public MoveCondition moveCondition;
     public StatusApply statusApply;
-    //targetting system will need to be planned better later 
+    //targeting system will need to be planned better later 
     public ValidTargets validTargets;
 
 
@@ -89,27 +90,51 @@ public struct Move
         this.statusApply = statusApply;
         this.validTargets = validTargets;
 
+        priority = -1;
+        synergyWith = MoveElement.None;
     }
 }
 
 
 
 //TriA should be checked on execution of calculations for special moves, individual of the move itself. The status will be applied at the very end of attack execution.
-public class MoveDetails : MonoBehaviour
+public class MoveDictionary : MonoBehaviour
 {
+    public List<Move> moveList;
+
     public void Start()
     {
-        //your example since it's breaking
-        //Move fireScratch = new Move("FireScratch", MoveElement.Fire);
+
 
     }
 
+    /// Need selected Target system for tri-A!!!
+
+    //if loneliness trait, synergyWIth = MoveElement.None
+
+    //make rest move
+
+    #region instance
+
+    private static MoveDictionary s_Instance = null;
+
+    public static MoveDictionary instance
+    {
+        get
+        {
+            if (s_Instance == null)
+            {
+                s_Instance = FindObjectOfType(typeof(MoveDictionary)) as MoveDictionary;
+            }
+
+            return s_Instance;
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        s_Instance = null;
+    }
+    #endregion
+
 }
-
-/// Need selected Target system for tri-A!!!
-
-//if loneliness trait, synergyWIth = MoveElement.None
-
-//make rest move
-
-
