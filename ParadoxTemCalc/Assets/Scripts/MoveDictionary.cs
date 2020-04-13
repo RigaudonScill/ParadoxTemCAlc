@@ -25,6 +25,7 @@ namespace UnityEngine
 
     public enum MoveCondition
     {
+        None,
         Positive,
         Negative,
         Status,
@@ -53,6 +54,7 @@ namespace UnityEngine
     //remake valid targets system
     public enum ValidTargets
     {
+        None,
         Self,
         Ally,
         Enemy1,
@@ -79,19 +81,27 @@ public struct Move
 
 
     //constructor
-    public Move(string name, int moveBP, int stamCost, int holdTime, MoveElement element, MoveCondition condition, StatusApply statusApply, ValidTargets validTargets)
+    public Move(string name, 
+                int moveBP = -1, 
+                int stamCost = -1, 
+                int holdTime = -1, 
+                int priority = -1, 
+                MoveElement element = MoveElement.None, 
+                MoveCondition condition = MoveCondition.None, 
+                StatusApply statusApply = StatusApply.None, 
+                MoveElement synergyWith = MoveElement.None, 
+                ValidTargets validTargets = ValidTargets.None)
     {
         this.name = name;
         this.moveBP = moveBP;
         this.stamCost = stamCost;
         this.holdTime = holdTime;
+        this.priority = priority;
         this.element = element;
         this.moveCondition = condition;
         this.statusApply = statusApply;
+        this.synergyWith = synergyWith;
         this.validTargets = validTargets;
-
-        priority = -1;
-        synergyWith = MoveElement.None;
     }
 }
 
