@@ -14,7 +14,6 @@ namespace UnityEngine
         [Header("Status")]
         public StatusList Status1;
         public StatusList Status2;
-        public bool Bamboozle;
         public int stat1Duration;
         public int stat2Duration;
         [Header("Base Stats")]

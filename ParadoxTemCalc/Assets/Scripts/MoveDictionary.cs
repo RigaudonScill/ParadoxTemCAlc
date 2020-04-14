@@ -23,11 +23,24 @@ namespace UnityEngine
         Toxic
     }
 
+    public enum BuffApply
+    {
+        None,
+        addAtk,
+        addDef,
+        addSpatk,
+        addSpdef,
+        addSpeed,
+        lowAtk,
+        lowDef,
+        lowSpatk,
+        lowSpdef,
+        lowSpeed
+    }
+
     public enum MoveCondition
     {
         None,
-        Positive,
-        Negative,
         Status,
         Damage,
         Special,
@@ -37,10 +50,12 @@ namespace UnityEngine
     public enum StatusApply
     {
         None,
+        Alerted,
         Asleep,
         Burn,
         Cold,
         Doom,
+        Evading,
         Exhausted,
         Immune,
         Neutralize,
@@ -48,7 +63,10 @@ namespace UnityEngine
         Regenerate,
         Seized,
         Trapped,
-        Vigorized
+        Vigorized,
+        Buff,
+        Positive,
+        Negative,
     }
 
     //remake valid targets system
@@ -56,15 +74,21 @@ namespace UnityEngine
     {
         None,
         Self,
+        singleAny,
+        singleEnemies,
         Ally,
         Enemy1,
         Enemy2,
         aoeEnemies,
         aoeAllies,
+        aoeAny,
+        //this last one means it automatically hits everyone on the field
         aoeAll
     }
+
     public enum MoveName
     {
+        TestMove,
         None,
         Rest,
         AllergicSpread,
@@ -231,23 +255,46 @@ public struct Move
     public MoveElement element;
     public MoveElement synergyWith;
     public MoveCondition moveCondition;
-    public StatusApply statusApply;
+    public StatusApply status1Apply;
+    public StatusApply status2Apply;
+    public StatusApply status1Benefit;
+    public StatusApply status2Benefit;
+    public BuffApply buff1Apply;
+    public BuffApply buff2Apply;
+    public StatusApply buff1Benefit;
+    public StatusApply buff2Benefit;
     //targeting system will need to be planned better later 
     public ValidTargets validTargets;
+    public ValidTargets status1Target;
+    public ValidTargets status2Target;
+    public ValidTargets buff1Target;
+    public ValidTargets buff2Target;
 
+    ///Status Duration to be checked elsewhere/later.
 
     //constructor
     public Move(MoveName moveName,
                 string name = "",
-                int moveBP = -1, 
-                int stamCost = -1, 
-                int holdTime = -1, 
-                int priority = -1, 
-                MoveElement element = MoveElement.None, 
-                MoveCondition condition = MoveCondition.None, 
-                StatusApply statusApply = StatusApply.None, 
-                MoveElement synergyWith = MoveElement.None, 
-                ValidTargets validTargets = ValidTargets.None)
+                int moveBP = 0,
+                int stamCost = 0,
+                int holdTime = 0,
+                int priority = 2,
+                MoveElement element = MoveElement.None,
+                MoveCondition condition = MoveCondition.None,
+                MoveElement synergyWith = MoveElement.None,
+                StatusApply status1Apply = StatusApply.None,
+                StatusApply status2Apply = StatusApply.None,
+                StatusApply status1Benefit = StatusApply.None,
+                StatusApply status2Benefit = StatusApply.None,
+                BuffApply buff1Apply = BuffApply.None,
+                BuffApply buff2Apply = BuffApply.None,
+                StatusApply buff1Benefit = StatusApply.None,
+                StatusApply buff2Benefit = StatusApply.None,
+                ValidTargets validTargets = ValidTargets.singleAny,
+                ValidTargets status1Target = ValidTargets.None,
+                ValidTargets status2Target = ValidTargets.None,
+                ValidTargets buff1Target = ValidTargets.None,
+                ValidTargets buff2Target = ValidTargets.None)
     {
         this.name = name;
         this.moveName = moveName;
@@ -257,8 +304,19 @@ public struct Move
         this.priority = priority;
         this.element = element;
         this.moveCondition = condition;
-        this.statusApply = statusApply;
         this.synergyWith = synergyWith;
+        this.status1Apply = status1Apply;
+        this.status2Apply = status2Apply;
+        this.status1Benefit = status1Benefit;
+        this.status2Benefit = status2Benefit;
+        this.buff1Apply = buff1Apply;
+        this.buff2Apply = buff2Apply;
+        this.buff1Benefit = buff1Benefit;
+        this.buff2Benefit = buff2Benefit;
+        this.status1Target = status1Target;
+        this.status2Target = status2Target;
+        this.buff1Target = buff1Target;
+        this.buff2Target = buff2Target;
         this.validTargets = validTargets;
 
         this.name = moveName.ToString();
@@ -268,6 +326,9 @@ public struct Move
 
 
 //TriA should be checked on execution of calculations for special moves, individual of the move itself. The status will be applied at the very end of attack execution.
+//You do not need to add property entries for some moves due to default. If something has 2 priority, 0 hold, 0 base damage, etc, you can leave it blank.
+//Use "None" move to copy/paste and edit from if you're confused.
+//We will possibly have to revisit buffs here.
 public class MoveDictionary : MonoBehaviour
 {
     public List<Move> moveList;
@@ -282,40 +343,130 @@ public class MoveDictionary : MonoBehaviour
             moveList.Add(m);
         }
         //example of grabbing a move by enum name to access a value
-        //moveList[(int)MoveName.TurboCharge].name
+        //output of moveList[(int)MoveName.TurboCharge].name
     }
 
     public void SetMoveValues(ref Move move)
     {
         switch (move.moveName)
         {
+            case MoveName.TestMove:
+                //This fake move applies sleep status to self, buffs the ally's atk, and lowers both enemy defenses.
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Asleep;
+                move.status1Target = ValidTargets.Self;
+                move.buff1Apply = BuffApply.addAtk;
+                move.buff1Target = ValidTargets.Ally;
+                move.buff2Apply = BuffApply.lowDef;
+                move.buff2Target = ValidTargets.aoeEnemies;
+                move.validTargets = ValidTargets.aoeEnemies;
+                break;
             case MoveName.None:
+                move.moveBP = 0;
+                move.stamCost = 0;
+                move.priority = 0;
+                move.holdTime = 0;
+                move.element = MoveElement.None;
+                move.moveCondition = MoveCondition.None;
+                move.status1Apply = StatusApply.None;
+                move.status1Benefit = StatusApply.None;
+                move.buff1Apply = BuffApply.None;
+                move.synergyWith = MoveElement.None;
+                move.validTargets = ValidTargets.None;
                 break;
             case MoveName.Rest:
                 break;
             case MoveName.AllergicSpread:
+                move.moveBP = 58;
+                move.stamCost = 18;
+                move.holdTime = 1;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Special;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.Antitoxins:
+                move.stamCost = 26;
+                move.holdTime = 2;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Status;
                 break;
             case MoveName.AquaStone:
+                move.moveBP = 80;
+                move.stamCost = 21;
+                move.holdTime = 1;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Physical;
+                move.status1Apply = StatusApply.None;
+                move.synergyWith = MoveElement.Earth;
                 break;
             case MoveName.AquaticWhirlwind:
+                move.moveBP = 130;
+                move.stamCost = 29;
+                move.priority = 3;
+                move.holdTime = 1;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.AwfulSong:
+                move.moveBP = 96;
+                move.stamCost = 20;
+                move.priority = 2;
+                move.holdTime = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Special;
+                move.synergyWith = MoveElement.Neutral;
                 break;
             case MoveName.Bamboozle:
+                move.stamCost = 18;
+                move.element = MoveElement.Mental;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Evading;
+                move.status1Benefit = StatusApply.Positive;
                 break;
             case MoveName.BarkShield:
+                move.stamCost = 30;
+                move.priority = 1;
+                move.holdTime = 2;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Status;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.BetaBurst:
+                move.moveBP = 100;
+                move.stamCost = 23;
+                move.element = MoveElement.Mental;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.Blizzard:
+                move.moveBP = 120;
+                move.stamCost = 15;
+                move.priority = 1;
+                move.holdTime = 1;
+                move.element = MoveElement.Wind;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.Block:
+                move.stamCost = 16;
+                move.holdTime = 1;
+                move.element = MoveElement.Melee;
+                move.moveCondition = MoveCondition.Status;
+                move.validTargets = ValidTargets.Self;
                 break;
             case MoveName.Boomerang:
+                move.moveBP = 85;
+                move.stamCost = 14;
+                move.priority = 3;
+                move.holdTime = 1;
+                move.element = MoveElement.Wind;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.Bubbles:
+                move.moveBP = 27;
+                move.stamCost = 5;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Special;
+                move.validTargets = ValidTargets.singleAny;
                 break;
             case MoveName.Cage:
                 break;
