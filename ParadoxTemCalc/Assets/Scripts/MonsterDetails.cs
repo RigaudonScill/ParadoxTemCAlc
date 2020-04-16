@@ -57,10 +57,12 @@ namespace UnityEngine
     public enum StatusList
     {
         None,
+        Alerted,
         Asleep,
         Burn,
         Cold,
         Doom,
+        Evading,
         Exhausted,
         Immune,
         Neutralize,

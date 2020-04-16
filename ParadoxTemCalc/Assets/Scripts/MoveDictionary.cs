@@ -49,7 +49,7 @@ namespace UnityEngine
 
     public enum StatusApply
     {
-        //-1 means negative status, 1 is positive.
+        //-1 means status is negative, 1 is positive for trait check purposes later.
         None,
         Alerted = 0,
         Asleep = -1,
@@ -72,6 +72,7 @@ namespace UnityEngine
     {
         None,
         Self,
+        notSelf,
         singleAny,
         singleEnemies,
         Ally,
@@ -1149,116 +1150,400 @@ public class MoveDictionary : MonoBehaviour
                 move.validTargets = ValidTargets.singleAny;
                 break;
             case MoveName.PsyWave:
+                move.moveBP = 61;
+                move.stamCost = 7;
+                move.holdTime = 1;
+                move.element = MoveElement.Mental;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.Rage:
+                move.stamCost = 10;
+                move.holdTime = 1;
+                move.element = MoveElement.Melee;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addAtk;
+                move.buff2Apply = BuffApply.lowDef;
+                move.buff1Target = ValidTargets.Self;
+                move.buff2Target = ValidTargets.Self;
+                move.validTargets = ValidTargets.Self;
                 break;
             case MoveName.Rampage:
+                move.moveBP = 65;
+                move.stamCost = 26;
+                move.priority = 1;
+                move.holdTime = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Physical;
+                move.synergyWith = MoveElement.Neutral;
                 break;
             case MoveName.Regenerate:
+                //unavailable, update later
                 break;
             case MoveName.Relax:
+                move.stamCost = 12;
+                move.priority = 1;
+                move.holdTime = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Asleep;
+                move.status1Target = ValidTargets.aoeAll;
+                move.validTargets = ValidTargets.aoeAll;
                 break;
             case MoveName.Rend:
+                move.moveBP = 50;
+                move.stamCost = 22;
+                move.holdTime = 2;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Neutralize;
+                move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.Revitalize:
+                //UNUSUAL EFFECT
+                move.stamCost = 15;
+                move.holdTime = 1;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Status;
+                move.synergyWith = MoveElement.Nature;
+                move.validTargets = ValidTargets.aoeAll;
                 break;
             case MoveName.Roar:
+                move.stamCost = 10;
+                move.holdTime = 2;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.lowAtk;
+                move.buff1Target = ValidTargets.aoeAny;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.Roots:
+                move.stamCost = 5;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.lowSpeed;
+                move.buff1Target = ValidTargets.singleAny;
+                move.validTargets = ValidTargets.singleAny;
                 break;
             case MoveName.Sacrifice:
+                move.priority = 3;
+                move.holdTime = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addDef;
+                move.buff2Apply = BuffApply.addSpdef;
+                move.buff1Target = ValidTargets.notSelf;
+                move.buff2Target = ValidTargets.notSelf;
+                move.validTargets = ValidTargets.notSelf;
                 break;
             case MoveName.SandSplatter:
+                move.moveBP = 35;
+                move.stamCost = 7;
+                move.element = MoveElement.Earth;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.Scratch:
+                move.moveBP = 20;
+                move.stamCost = 4;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.SharpLeaf:
+                move.moveBP = 50;
+                move.stamCost = 7;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.SharpRain:
+                move.moveBP = 130;
+                move.stamCost = 20;
+                move.holdTime = 2;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.SharpStabs:
+                move.moveBP = 76;
+                move.stamCost = 15;
+                move.priority = 3;
+                move.holdTime = 1;
+                move.element = MoveElement.Crystal;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.ShowOff:
+                move.stamCost = 7;
+                move.element = MoveElement.Melee;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addAtk;
+                move.buff1Target = ValidTargets.Self;
+                move.synergyWith = MoveElement.Melee;
+                move.validTargets = ValidTargets.Self;
                 break;
             case MoveName.ShrillVoice:
+                move.moveBP = 42;
+                move.stamCost = 12;
+                move.holdTime = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Special;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.ShyShield:
+                move.stamCost = 4;
+                move.priority = 3;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addDef;
+                move.buff1Target = ValidTargets.Self;
+                move.validTargets = ValidTargets.Self;
                 break;
             case MoveName.Slime:
+                move.stamCost = 12;
+                move.priority = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Trapped;
+                move.status1Target = ValidTargets.singleAny;
+                move.buff1Apply = BuffApply.lowSpeed;
+                move.buff1Target = ValidTargets.singleAny;
                 break;
             case MoveName.SlowDown:
+                //unavailable, update later
                 break;
             case MoveName.Sparks:
+                move.stamCost = 5;
+                move.element = MoveElement.Electric;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addSpatk;
+                move.buff1Target = ValidTargets.singleAny;
+                move.validTargets = ValidTargets.singleAny;
                 break;
             case MoveName.Spores:
+                move.moveBP = 37;
+                move.stamCost = 6;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.Stare:
+                move.stamCost = 6;
+                move.element = MoveElement.Mental;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Alerted;
+                move.status1Target = ValidTargets.Self;
+                move.buff1Apply = BuffApply.lowDef;
+                move.buff1Target = ValidTargets.singleAny;
                 break;
             case MoveName.StoneBall:
+                move.moveBP = 130;
+                move.stamCost = 29;
+                move.priority = 1;
+                move.element = MoveElement.Earth;
+                move.moveCondition = MoveCondition.Physical;
+                move.synergyWith = MoveElement.Fire;
                 break;
             case MoveName.StoneWall:
+                move.stamCost = 18;
+                move.priority = 1;
+                move.holdTime = 1;
+                move.element = MoveElement.Earth;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addDef;
+                move.buff2Apply = BuffApply.addSpdef;
+                move.buff1Target = ValidTargets.singleAny;
+                move.buff2Target = ValidTargets.singleAny;
                 break;
             case MoveName.Strangle:
+                //UNUSUAL EFFECT
+                //MAY WANT "DISABLED" STATUS
+                move.moveBP = 25;
+                move.stamCost = 11;
+                move.priority = 0;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.TailStrike:
+                move.moveBP = 50;
+                move.stamCost = 5;
+                move.holdTime = 1;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.TelekineticShrapnel:
+                move.moveBP = 80;
+                move.stamCost = 8;
+                move.holdTime = 1;
+                move.element = MoveElement.Mental;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.Tenderness:
+                move.stamCost = 3;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.lowAtk;
+                move.buff1Target = ValidTargets.singleAny;
                 break;
             case MoveName.TentacleWhip:
+                move.moveBP = 60;
+                move.stamCost = 15;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.TeslaPrison:
+                move.moveBP = 50;
+                move.stamCost = 12;
+                move.element = MoveElement.Electric;
+                move.moveCondition = MoveCondition.Special;
+                move.buff1Apply = BuffApply.lowSpeed;
+                move.buff1Target = ValidTargets.singleAny;
                 break;
             case MoveName.Tornado:
+                move.moveBP = 135;
+                move.stamCost = 31;
+                move.priority = 3;
+                move.holdTime = 1;
+                move.element = MoveElement.Wind;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.ToxicFang:
+                move.moveBP = 62;
+                move.stamCost = 12;
+                move.holdTime = 1;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.ToxicInk:
+                move.moveBP = 80;
+                move.stamCost = 16;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Physical;
+                move.status1Apply = StatusApply.Poison;
+                move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.ToxicPlume:
+                move.moveBP = 50;
+                move.stamCost = 24;
+                move.holdTime = 1;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Special;
+                move.status1Apply = StatusApply.Poison;
+                move.status1Target = ValidTargets.aoeAny;
+                move.synergyWith = MoveElement.Crystal;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.ToxicSlime:
+                move.moveBP = 50;
+                move.stamCost = 12;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.ToxicSpores:
+                move.stamCost = 9;
+                move.priority = 1;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Status;
+                move.status1Apply = StatusApply.Poison;
+                move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.Tsunami:
+                move.moveBP = 70;
+                move.stamCost = 25;
+                move.holdTime = 1;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Special;
+                move.synergyWith = MoveElement.Wind;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.TurboAttack:
+                //unavailable, update later
                 break;
             case MoveName.TurboCharge:
+                //UNUSUAL EFFECT
+                move.stamCost = 21;
+                move.priority = 4;
+                move.holdTime = 1;
+                move.element = MoveElement.Electric;
+                move.moveCondition = MoveCondition.Status;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.TurboChoreography:
+                move.stamCost = 27;
+                move.priority = 4;
+                move.holdTime = 1;
+                move.element = MoveElement.Wind;
+                move.moveCondition = MoveCondition.Status;
+                move.buff1Apply = BuffApply.addSpeed;
+                move.buff1Target = ValidTargets.aoeAny;
+                move.synergyWith = MoveElement.Wind;
+                move.validTargets = ValidTargets.aoeAny;
                 break;
             case MoveName.Uppercut:
+                move.moveBP = 80;
+                move.stamCost = 12;
+                move.element = MoveElement.Melee;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.Urushiol:
+                move.moveBP = 41;
+                move.stamCost = 8;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Physical;
+                move.synergyWith = MoveElement.Toxic;
+                move.validTargets = ValidTargets.singleAny;
                 break;
             case MoveName.VenomousClaws:
+                move.moveBP = 40;
+                move.stamCost = 9;
+                move.element = MoveElement.Toxic;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.WakeUp:
+                move.moveBP = 1;
+                move.priority = 4;
+                move.element = MoveElement.Neutral;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.WarmCuddle:
+                move.moveBP = 53;
+                move.stamCost = 12;
+                move.element = MoveElement.Fire;
+                move.moveCondition = MoveCondition.Physical;
                 break;
             case MoveName.WaterBlade:
+                move.moveBP = 52;
+                move.stamCost = 10;
+                move.priority = 1;
+                move.element = MoveElement.Water;
                 break;
             case MoveName.WaterCannon:
+                move.moveBP = 100;
+                move.stamCost = 21;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Special;
+                move.synergyWith = MoveElement.Toxic;
                 break;
             case MoveName.WaterCuttingLily:
+                move.moveBP = 120;
+                move.stamCost = 31;
+                move.priority = 3;
+                move.element = MoveElement.Nature;
+                move.moveCondition = MoveCondition.Physical;
+                move.synergyWith = MoveElement.Water;
                 break;
             case MoveName.WindBlade:
+                move.moveBP = 40;
+                move.stamCost = 9;
+                move.element = MoveElement.Wind;
+                move.moveCondition = MoveCondition.Special;
                 break;
             case MoveName.WindBurst:
+                move.moveBP = 90;
+                move.stamCost = 12;
+                move.element = MoveElement.Wind;
+                move.moveCondition = MoveCondition.Special;
                 break;
             default:
                 break;
         }
     }
-    /// Need selected Target system for tri-A!!!
 
-    //if loneliness trait, synergyWIth = MoveElement.None
-
-    //make rest move
+    //if loneliness trait, synergyWith = MoveElement.None
 
     #region instance
 
