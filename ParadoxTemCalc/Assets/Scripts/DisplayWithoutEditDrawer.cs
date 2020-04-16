@@ -38,7 +38,7 @@ public class DisplayWithoutEditDrawer : PropertyDrawer
             case SerializedPropertyType.Gradient:
                 break;
             case SerializedPropertyType.Integer:
-                EditorGUI.LabelField(position, label, new GUIContent(property.intValue.ToSpaceString()));
+                EditorGUI.LabelField(position, label, new GUIContent(property.intValue.ToString()));
                 break;
             case SerializedPropertyType.LayerMask:
                 break;

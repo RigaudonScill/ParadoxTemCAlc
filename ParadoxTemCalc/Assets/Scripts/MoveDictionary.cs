@@ -244,24 +244,42 @@ namespace UnityEngine
 [System.Serializable]
 public struct Move
 {
+    [HideInInspector]
     public string name;
+    [DisplayWithoutEdit()]
     public MoveName moveName;
+    [DisplayWithoutEdit()]
     public int moveBP;
+    [DisplayWithoutEdit()]
     public int stamCost;
+    [DisplayWithoutEdit()]
     public int holdTime;
+    [DisplayWithoutEdit()]
     public int priority;
+    [DisplayWithoutEdit()]
     public MoveElement element;
+    [DisplayWithoutEdit()]
     public MoveElement synergyWith;
+    [DisplayWithoutEdit()]
     public MoveCondition moveCondition;
-    public StatusApply status1Apply;
+    [DisplayWithoutEdit()]
+    public StatusApply status1Apply; 
+    [DisplayWithoutEdit()]
     public StatusApply status2Apply;
+    [DisplayWithoutEdit()]
     public BuffApply buff1Apply;
+    [DisplayWithoutEdit()]
     public BuffApply buff2Apply;
     //targeting system will need to be planned better later 
+    [DisplayWithoutEdit()]
     public ValidTargets validTargets;
+    [DisplayWithoutEdit()]
     public ValidTargets status1Target;
+    [DisplayWithoutEdit()]
     public ValidTargets status2Target;
+    [DisplayWithoutEdit()]
     public ValidTargets buff1Target;
+    [DisplayWithoutEdit()]
     public ValidTargets buff2Target;
 
     ///Status Duration to be checked elsewhere/later.
