@@ -242,6 +242,7 @@ namespace UnityEngine
         WindBurst
     }
 }
+
 [System.Serializable]
 public struct Move
 {
@@ -305,7 +306,6 @@ public struct Move
                 ValidTargets buff1Target = ValidTargets.None,
                 ValidTargets buff2Target = ValidTargets.None)
     {
-        this.name = name;
         this.moveName = moveName;
         this.moveBP = moveBP;
         this.stamCost = stamCost;
@@ -336,6 +336,9 @@ public struct Move
 //We will possibly have to revisit buffs here.
 public class MoveDictionary : MonoBehaviour
 {
+    [DisplayWithoutEdit()]
+    public bool listLoaded = false;
+
     public List<Move> moveList;
 
     public void Start()
@@ -349,6 +352,7 @@ public class MoveDictionary : MonoBehaviour
         }
         //example of grabbing a move by enum name to access a value
         //output of moveList[(int)MoveName.TurboCharge].name
+        listLoaded = true;
     }
 
     public void SetMoveValues(ref Move move)
@@ -1541,6 +1545,11 @@ public class MoveDictionary : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public Move GetMoveByName(MoveName name)
+    {
+        return moveList[(int)name];
     }
 
     //if loneliness trait, synergyWith = MoveElement.None
