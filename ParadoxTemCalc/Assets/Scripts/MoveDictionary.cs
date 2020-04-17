@@ -53,15 +53,16 @@ namespace UnityEngine
         None,
         Alerted = 1,
         Asleep = -1,
-        Burn = -1,
+        Burned = -1,
         Cold = -1,
-        Doom = 0,
+        Doomed = 0,
         Evading = 1,
         Exhausted = -1,
+        Frozen = -1,
         Immune = 0,
-        Neutralize = -1,
-        Poison = -1,
-        Regenerate = 1,
+        Neutralized = -1,
+        Poisoned = -1,
+        Regenerating = 1,
         Seized = -1,
         Trapped = -1,
         Vigorized = 1
@@ -642,7 +643,7 @@ public class MoveDictionary : MonoBehaviour
                 move.stamCost = 15;
                 move.element = MoveElement.Fire;
                 move.moveCondition = MoveCondition.Physical;
-                move.status1Apply = StatusApply.Burn;
+                move.status1Apply = StatusApply.Burned;
                 move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.EnergyManipulation:
@@ -660,7 +661,7 @@ public class MoveDictionary : MonoBehaviour
                 move.holdTime = 2;
                 move.element = MoveElement.Fire;
                 move.moveCondition = MoveCondition.Status;
-                move.status1Apply = StatusApply.Doom;
+                move.status1Apply = StatusApply.Doomed;
                 move.status1Target = ValidTargets.aoeAll;
                 move.validTargets = ValidTargets.aoeAll;
                 break;
@@ -926,7 +927,7 @@ public class MoveDictionary : MonoBehaviour
                 move.stamCost = 12;
                 move.element = MoveElement.Nature;
                 move.moveCondition = MoveCondition.Status;
-                move.status1Apply = StatusApply.Regenerate;
+                move.status1Apply = StatusApply.Regenerating;
                 move.status1Target = ValidTargets.Self;
                 move.validTargets = ValidTargets.Self;
                 break;
@@ -958,7 +959,7 @@ public class MoveDictionary : MonoBehaviour
                 move.holdTime = 3;
                 move.element = MoveElement.Fire;
                 move.moveCondition = MoveCondition.Special;
-                move.status1Apply = StatusApply.Burn;
+                move.status1Apply = StatusApply.Burned;
                 move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.MajorSlash:
@@ -1096,7 +1097,7 @@ public class MoveDictionary : MonoBehaviour
                 move.holdTime = 2;
                 move.element = MoveElement.Toxic;
                 move.moveCondition = MoveCondition.Status;
-                move.status1Apply = StatusApply.Poison;
+                move.status1Apply = StatusApply.Poisoned;
                 move.status2Apply = StatusApply.Trapped;
                 move.status1Target = ValidTargets.singleAny;
                 move.status2Target = ValidTargets.singleAny;
@@ -1129,7 +1130,7 @@ public class MoveDictionary : MonoBehaviour
                 move.holdTime = 2;
                 move.element = MoveElement.Toxic;
                 move.moveCondition = MoveCondition.Status;
-                move.status1Apply = StatusApply.Poison;
+                move.status1Apply = StatusApply.Poisoned;
                 move.status1Target = ValidTargets.aoeAny;
                 move.validTargets = ValidTargets.aoeAny;
                 break;
@@ -1199,7 +1200,7 @@ public class MoveDictionary : MonoBehaviour
                 move.holdTime = 2;
                 move.element = MoveElement.Neutral;
                 move.moveCondition = MoveCondition.Status;
-                move.status1Apply = StatusApply.Neutralize;
+                move.status1Apply = StatusApply.Neutralized;
                 move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.Revitalize:
@@ -1417,7 +1418,7 @@ public class MoveDictionary : MonoBehaviour
                 move.stamCost = 16;
                 move.element = MoveElement.Toxic;
                 move.moveCondition = MoveCondition.Physical;
-                move.status1Apply = StatusApply.Poison;
+                move.status1Apply = StatusApply.Poisoned;
                 move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.ToxicPlume:
@@ -1426,7 +1427,7 @@ public class MoveDictionary : MonoBehaviour
                 move.holdTime = 1;
                 move.element = MoveElement.Toxic;
                 move.moveCondition = MoveCondition.Special;
-                move.status1Apply = StatusApply.Poison;
+                move.status1Apply = StatusApply.Poisoned;
                 move.status1Target = ValidTargets.aoeAny;
                 move.synergyWith = MoveElement.Crystal;
                 move.validTargets = ValidTargets.aoeAny;
@@ -1442,7 +1443,7 @@ public class MoveDictionary : MonoBehaviour
                 move.priority = 1;
                 move.element = MoveElement.Toxic;
                 move.moveCondition = MoveCondition.Status;
-                move.status1Apply = StatusApply.Poison;
+                move.status1Apply = StatusApply.Poisoned;
                 move.status1Target = ValidTargets.singleAny;
                 break;
             case MoveName.Tsunami:
