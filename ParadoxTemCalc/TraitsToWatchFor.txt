@@ -1,0 +1,14 @@
+Unusual traits to track for since they want or ignore specific rules:
+Flawed Crystal
+Shared Pain (Diverts consecutive attacks to an ally)
+Water Affinity/Toxic Affinity
+Puppet Master
+Tri-Apothecary
+Fainted Curse
+Friendship
+Protector
+Dreaded Alarm (Rival rests, they lose 20% HP)
+Tireless (ignores stamina overexertion)
+Rested (counts how many turns on field for its effect)
+Settling (adds 8% per turn on battlefield)
+Soft Touch (does not wake sleeping tems)

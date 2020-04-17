@@ -51,7 +51,7 @@ namespace UnityEngine
     {
         //-1 means status is negative, 1 is positive for trait check purposes later.
         None,
-        Alerted = 0,
+        Alerted = 1,
         Asleep = -1,
         Burn = -1,
         Cold = -1,

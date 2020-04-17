@@ -26,30 +26,124 @@ namespace UnityEngine
 
     public enum MonsterStatus
     {
-        None,
-        Alerted,
-        Asleep,
-        Burn,
-        Cold,
-        Doom,
-        Evading,
-        Exhausted,
-        Immune,
-        Neutralize,
-        Poison,
-        Regenerate,
-        Seized,
-        Trapped,
-        Vigorized
+        // 0 is neutral, 1 is positive, -1 is negative.
+        //Test to see if Neutralize status is actually positive or negative.
+        None = 0,
+        Alerted = 1,
+        Asleep = -1,
+        Burn = -1,
+        Cold = -1,
+        Doom = -1,
+        Evading = 1,
+        Exhausted = -1,
+        Immune = 0,
+        Neutralize = 0,
+        Poison = -1,
+        Regenerate = 1,
+        Seized = -1,
+        Trapped = -1,
+        Vigorized = 1
     }
 
+    public enum MonsterBuff
+    {
+        //1 means good, -1 means bad.
+        None = 0,
+        addAtk = 1,
+        addDef = 1,
+        addSpatk = 1,
+        addSpdef = 1,
+        addSpeed = 1,
+        lowAtk = -1,
+        lowDef = -1,
+        lowSpatk = -1,
+        lowSpdef = -1,
+        lowSpeed = -1
+    }
     public enum MonsterTrait
     {
         None,
+        Aerobic,
+        AirSpecialist,
+        Amphibian,
+        Anaerobic,
+        Apothecary,
+        Avenger,
+        Benefactor,
+        Botanist,
+        Botanophobia,
+        Brawny,
+        Bully,
+        Caffeinated,
+        Callosity,
+        Camaraderie,
+        Channeler,
+        ColdNatured,
+        Demoralize,
+        Determined,
+        ElectricSynthesize,
+        EnergyReserve,
+        FaintedCurse,
+        FastCharge,
+        FeverRush,
+        FlawedCrystal,
+        Friendship,
+        Furor,
+        Guardian,
+        Hover,
+        Hydrologist,
+        Immunity,
+        Individualist,
+        LastRush,
+        Loneliness,
+        MentalAlliance,
+        Mirroring,
+        Mithridatism,
+        Motivator,
+        Mucous,
+        Neutrality,
+        Parrier,
+        Patient,
+        Plethoric,
+        PowerNap,
+        Prideful,
+        Protector,
+        Provident,
+        PunchingBag,
+        PuppetMaster,
+        Pyromaniac,
+        Receptive,
+        Rejuvinate,
+        Resilient,
+        Resistant,
+        Rested,
+        Scavenger,
+        Settling,
+        SharedPain,
+        SoftTouch,
+        Spoilsport,
+        StrongLiver,
+        SynergyMaster,
+        ThickSkin,
+        Tireless,
+        ToxicAffinity,
+        ToxicFarewell,
+        ToxicSkin,
+        Trance,
+        Trauma,
+        TriApothecary,
+        Vigorous,
+        Warmblooded,
+        WaterAFfinity,
+        Withdrawal,
+        WreckedFarewell,
+        Zen
+
     }
 
     public enum MonsterName
     {
+        None,
         Adoroboros,
         Anahir,
         Azuroc,
@@ -138,9 +232,15 @@ public struct Monster
     [DisplayWithoutEdit()]
     public MonsterName monsterName;
     [DisplayWithoutEdit()]
-    public MonsterTrait trait;
+    public MonsterName evolvesFrom;
     [DisplayWithoutEdit()]
-    public MonsterType type;
+    public MonsterTrait trait1;
+    [DisplayWithoutEdit()]
+    public MonsterTrait trait2;
+    [DisplayWithoutEdit()]
+    public MonsterType type1;
+    [DisplayWithoutEdit()]
+    public MonsterType type2;
     [Header("Status"), DisplayWithoutEdit()]
     public MonsterStatus status1;
     [DisplayWithoutEdit()]
@@ -149,6 +249,14 @@ public struct Monster
     public int stat1Duration;
     [DisplayWithoutEdit()]
     public int stat2Duration;
+    [DisplayWithoutEdit()]
+    public MonsterBuff buff1;
+    [DisplayWithoutEdit()]
+    public MonsterBuff buff2;
+    [DisplayWithoutEdit()]
+    public int buff1Stage;
+    [DisplayWithoutEdit()]
+    public int buff2Stage;
     [Header("Base Stats"), DisplayWithoutEdit()]
     public float baseHP;
     [DisplayWithoutEdit()]
@@ -183,34 +291,50 @@ public struct Monster
 
     public Monster(MonsterName monsterName,
                    string name = "",
-                   MonsterTrait trait = MonsterTrait.None,
-                   MonsterType type = MonsterType.None,
+                   MonsterName evolvesFrom = MonsterName.None,
+                   MonsterTrait trait1 = MonsterTrait.None,
+                   MonsterTrait trait2 = MonsterTrait.None,
+                   MonsterType type1 = MonsterType.None,
+                   MonsterType type2 = MonsterType.None,
                    MonsterStatus status1 = MonsterStatus.None,
                    MonsterStatus status2 = MonsterStatus.None,
                    int stat1Duration = 0,
                    int stat2Duration = 0,
-                   float baseHP = 0f,
-                   float baseSTA = 0f,
-                   float baseSPD = 0f,
-                   float baseATK = 0f,
-                   float baseDEF = 0f,
-                   float baseSpATK = 0f,
-                   float baseSpDEF = 0f,
-                   float tvHP = 0f,
-                   float tvSTA = 0f,
-                   float tvSPD = 0f,
-                   float tvATK = 0f,
-                   float tvDEF = 0f,
-                   float tvSpATK = 0f,
-                   float tvSpDEF = 0f)
+                   MonsterBuff buff1 = MonsterBuff.None,
+                   MonsterBuff buff2 = MonsterBuff.None,
+                   int buff1Stage = 0,
+                   int buff2Stage = 0,
+
+                   //base stats may need to be float...
+                   int baseHP = 0,
+                   int baseSTA = 0,
+                   int baseSPD = 0,
+                   int baseATK = 0,
+                   int baseDEF = 0,
+                   int baseSpATK = 0,
+                   int baseSpDEF = 0,
+                   int tvHP = 0,
+                   int tvSTA = 0,
+                   int tvSPD = 0,
+                   int tvATK = 0,
+                   int tvDEF = 0,
+                   int tvSpATK = 0,
+                   int tvSpDEF = 0)
     {
         this.monsterName = monsterName;
-        this.trait = trait;
-        this.type = type;
+        this.evolvesFrom = evolvesFrom;
+        this.trait1 = trait1;
+        this.trait2 = trait2;
+        this.type1 = type1;
+        this.type2 = type2;
         this.status1 = status1;
         this.status2 = status2;
+        this.buff1 = buff1;
+        this.buff2 = buff2;
         this.stat1Duration = stat1Duration;
         this.stat2Duration = stat2Duration;
+        this.buff1Stage = buff1Stage;
+        this.buff2Stage = buff2Stage;
         this.baseHP = baseHP;
         this.baseSTA = baseSTA;
         this.baseSPD = baseSPD;
@@ -256,19 +380,153 @@ public class MonsterDictionary : MonoBehaviour
     public void SetMonsterValues(ref Monster monster)
     {
 
-        //set defaults here
+        //DO NOT DELETE THESE TWO MOVES.
         monster.canLearn.Add(MoveName.None);
         monster.canLearn.Add(MoveName.Rest);
 
         switch (monster.monsterName)
         {
+            case MonsterName.None:
+                //copy/paste this when creating a new temtem if you're confused.
+                monster.evolvesFrom = MonsterName.None;
+                monster.trait1 = MonsterTrait.None;
+                monster.trait2 = MonsterTrait.None;
+                monster.type1 = MonsterType.None;
+                monster.type2 = MonsterType.None;
+                monster.baseHP = 0;
+                monster.baseSTA = 0;
+                monster.baseSPD = 0;
+                monster.baseATK = 0;
+                monster.baseDEF = 0;
+                monster.baseSpATK = 0;
+                monster.baseSpDEF = 0;
+                //TVs, edit in UI only preferably
+                monster.tvHP = 0;
+                monster.tvSTA = 0;
+                monster.tvSPD = 0;
+                monster.tvATK = 0;
+                monster.tvDEF = 0;
+                monster.tvSpATK = 0;
+                monster.tvSpDEF = 0;
+                //do not edit, used only in calculation phase
+                monster.status1 = MonsterStatus.None;
+                monster.status2 = MonsterStatus.None;
+                monster.stat1Duration = 0;
+                monster.stat2Duration = 0;
+                monster.buff1 = MonsterBuff.None;
+                monster.buff2 = MonsterBuff.None;
+                monster.buff1Stage = 0;
+                monster.buff2Stage = 0;
+                //Learnset
+                monster.canLearn.Add(MoveName.None);
+                monster.canLearn.Add(MoveName.Rest);
+                monster.canLearn.Add(MoveName.AllergicSpread);
+                break;
             case MonsterName.Adoroboros:
+                monster.trait1 = MonsterTrait.SynergyMaster;
+                monster.trait2 = MonsterTrait.ToxicSkin;
+                monster.type1 = MonsterType.Toxic;
+                monster.type2 = MonsterType.Mental;
+                monster.baseHP = 66;
+                monster.baseSTA = 66;
+                monster.baseSPD = 60;
+                monster.baseATK = 29;
+                monster.baseDEF = 42;
+                monster.baseSpATK = 70;
+                monster.baseSpDEF = 110;
+                //Learnset
+                monster.canLearn.Add(MoveName.TailStrike);
+                monster.canLearn.Add(MoveName.EnergyManipulation);
+                monster.canLearn.Add(MoveName.ToxicInk);
+                monster.canLearn.Add(MoveName.PsychicCollaborator);
+                monster.canLearn.Add(MoveName.BetaBurst);
+                monster.canLearn.Add(MoveName.Pollution);
+                monster.canLearn.Add(MoveName.Lullaby);
+                monster.canLearn.Add(MoveName.Sacrifice);
+                monster.canLearn.Add(MoveName.WakeUp);
+                monster.canLearn.Add(MoveName.Misogi);
+                monster.canLearn.Add(MoveName.NoxiousBomb);
+                monster.canLearn.Add(MoveName.Antitoxins);
+                monster.canLearn.Add(MoveName.Confiscate);
+                monster.canLearn.Add(MoveName.Relax);
+                monster.canLearn.Add(MoveName.Hypnosis);
+                monster.canLearn.Add(MoveName.HeldAnger);
+                monster.canLearn.Add(MoveName.InnerSpirit);
                 break;
             case MonsterName.Anahir:
+                monster.trait1 = MonsterTrait.Trauma;
+                monster.trait2 = MonsterTrait.FlawedCrystal;
+                monster.type1 = MonsterType.Crystal;
+                monster.type2 = MonsterType.Fire;
+                monster.baseHP = 54;
+                monster.baseSTA = 36;
+                monster.baseSPD = 31;
+                monster.baseATK = 50;
+                monster.baseDEF = 101;
+                monster.baseSpATK = 50;
+                monster.baseSpDEF = 101;
+                //Learnset
+                monster.canLearn.Add(MoveName.GlassBlade);
+                monster.canLearn.Add(MoveName.FireFlame);
+                monster.canLearn.Add(MoveName.HeadCharge);
+                monster.canLearn.Add(MoveName.MeteorSwarm);
+                monster.canLearn.Add(MoveName.Rampage);
+                monster.canLearn.Add(MoveName.HeatUp);
+                monster.canLearn.Add(MoveName.CrystalBite);
+                monster.canLearn.Add(MoveName.MagmaCannon);
                 break;
             case MonsterName.Azuroc:
+                monster.trait1 = MonsterTrait.Mirroring;
+                monster.trait2 = MonsterTrait.FaintedCurse;
+                monster.type1 = MonsterType.Crystal;
+                monster.type2 = MonsterType.None;
+                monster.baseHP = 64;
+                monster.baseSTA = 34;
+                monster.baseSPD = 50;
+                monster.baseATK = 58;
+                monster.baseDEF = 69;
+                monster.baseSpATK = 60;
+                monster.baseSpDEF = 62;
+                //Learnset
+                monster.canLearn.Add(MoveName.Scratch);
+                monster.canLearn.Add(MoveName.Nibble);
+                monster.canLearn.Add(MoveName.GlassBlade);
+                monster.canLearn.Add(MoveName.TailStrike);
+                monster.canLearn.Add(MoveName.SharpStabs);
+                monster.canLearn.Add(MoveName.CrystalSpikes);
+                monster.canLearn.Add(MoveName.MadnessBuff);
+                monster.canLearn.Add(MoveName.CrystalBite);
+                monster.canLearn.Add(MoveName.Rend);
+                monster.canLearn.Add(MoveName.Footwork);
+                monster.canLearn.Add(MoveName.DiamondFort);
                 break;
             case MonsterName.Babawa:
+                monster.trait1 = MonsterTrait.Mucous;
+                monster.trait2 = MonsterTrait.Withdrawal;
+                monster.type1 = MonsterType.Nature;
+                monster.type2 = MonsterType.Water;
+                monster.baseHP = 85;
+                monster.baseSTA = 92;
+                monster.baseSPD = 40;
+                monster.baseATK = 79;
+                monster.baseDEF = 57;
+                monster.baseSpATK = 51;
+                monster.baseSpDEF = 44;
+                //Learnset
+                monster.canLearn.Add(MoveName.Nibble);
+                monster.canLearn.Add(MoveName.ShyShield);
+                monster.canLearn.Add(MoveName.SharpLeaf);
+                monster.canLearn.Add(MoveName.Slime);
+                monster.canLearn.Add(MoveName.WaterCuttingLily);
+                monster.canLearn.Add(MoveName.IcedStalactite);
+                monster.canLearn.Add(MoveName.AquaStone);
+                monster.canLearn.Add(MoveName.HarmfulLick);
+                monster.canLearn.Add(MoveName.WakeUp);
+                monster.canLearn.Add(MoveName.Misogi);
+                monster.canLearn.Add(MoveName.Antitoxins);
+                monster.canLearn.Add(MoveName.Bubbles);
+                monster.canLearn.Add(MoveName.IceCubes);
+                monster.canLearn.Add(MoveName.ToxicSlime);
                 break;
             case MonsterName.Baboong:
                 break;
