@@ -93,6 +93,7 @@ namespace UnityEngine
         Rest,
         AllergicSpread,
         Antitoxins,
+        AquaBulletHell,
         AquaStone,
         AquaticWhirlwind,
         AwfulSong,
@@ -402,13 +403,18 @@ public class MoveDictionary : MonoBehaviour
                 move.element = MoveElement.Nature;
                 move.moveCondition = MoveCondition.Status;
                 break;
+            case MoveName.AquaBulletHell:
+                move.moveBP = 67;
+                move.stamCost = 17;
+                move.element = MoveElement.Water;
+                move.moveCondition = MoveCondition.Special;
+                break;
             case MoveName.AquaStone:
                 move.moveBP = 80;
                 move.stamCost = 21;
                 move.holdTime = 1;
                 move.element = MoveElement.Water;
                 move.moveCondition = MoveCondition.Physical;
-                move.status1Apply = StatusApply.None;
                 move.synergyWith = MoveElement.Earth;
                 break;
             case MoveName.AquaticWhirlwind:
