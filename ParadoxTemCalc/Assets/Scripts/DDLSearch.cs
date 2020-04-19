@@ -26,6 +26,17 @@ public class DDLSearch : MonoBehaviour
     bool fieldSelected = false;
     TMP_Dropdown DDL;
 
+    [Header("List Info")]
+    [DisplayWithoutEdit()]
+    bool DisplayListOpen = false;
+    [SerializeField] GameObject DisplayList; //using this to override the DDL because it sucks :D
+    [SerializeField] Transform Content;
+    public List<string> DisplayListOptions; //use this for debugging
+    [SerializeField] Button SelectButton;
+    [SerializeField] GameObject Template; //uses template for options to select in list
+    List<GameObject> Options;
+    string lastPushed;
+
     void Awake()
     {
         //search children for input field and drop down
@@ -34,6 +45,10 @@ public class DDLSearch : MonoBehaviour
 
         //Make a list in memory as dropdown options to be populated and referenced later as a master list
         DDL_Options = new List<string>();
+
+        Options = new List<GameObject>();
+
+        DisplayListOptions = new List<string>();
     }
 
     private void FixedUpdate()
@@ -49,6 +64,15 @@ public class DDLSearch : MonoBehaviour
         {
             FilterSearch(inputField.text);
         }
+
+        if (DisplayListOpen)
+        {
+            DisplayList.SetActive(true);
+        }
+        else
+        {
+            DisplayList.SetActive(false);
+        }
     }
 
     #region Search Filter
@@ -62,30 +86,42 @@ public class DDLSearch : MonoBehaviour
         {
             bool match = false;
             int matchingChars = 0;
-            //check each character of typed text for match, each one that doesn't match, remove
-            for(int i = 0; i < typedText.Length; i++)
+            //edge case, was breaking when typed text was too long
+            if(typedText.Length <= s.Length)
             {
-                match = typedText[i].ToString().Equals(s[i].ToString(), StringComparison.InvariantCultureIgnoreCase);
-
-                if (match)
+                //check each character of typed text for match, each one that doesn't match, remove
+                for (int i = 0; i < typedText.Length; i++)
                 {
-                    //log how many characters are matching
-                    matchingChars++;
+                    match = typedText[i].ToString().Equals(s[i].ToString(), StringComparison.InvariantCultureIgnoreCase);
+
+                    if (match)
+                    {
+                        //log how many characters are matching
+                        matchingChars++;
+                    }
+                }
+                //evaluate match status after all chars in typedText have been evaluated
+                if (matchingChars == typedText.Length)
+                {
+                    newOptions.Add(s);
                 }
             }
-            //evaluate match status after all chars in typedText have been evaluated
-            if (matchingChars == typedText.Length)
-            {
-                newOptions.Add(s);
-            }
+
         }
 
+        if(newOptions.Count == 0)
+        {
+            string s = "None";
+            newOptions.Add(s);
+        }
         //update the list
-        DDL.ClearOptions();
-        DDL.AddOptions(newOptions);
-        DDL.Show();
+        UpdateListOptions(newOptions);
+
+        //DDL.Show();
+        //DisplayListOpen = true;
 
         fieldSelected = false;
+
     }
     #endregion
 
@@ -93,11 +129,15 @@ public class DDLSearch : MonoBehaviour
     //called OnValueChanged from input field
     public void UpdateFilter()
     {
-        if(inputField.text != "" && inputField.text != DDL_Options[0] && inputField.text != DDL.options[DDL.value].text)
+        if(DDL.options.Count != 0)
         {
-            fieldSelected = true;
+            if (inputField.text != "" && inputField.text != DDL_Options[0] && inputField.text != DDL.options[DDL.value].text)
+            {
+                fieldSelected = true;
+            }
         }
-        if(inputField.text == "")
+
+        if (inputField.text == "")
         {
             RestoreDefaultListValues();
         }
@@ -106,8 +146,14 @@ public class DDLSearch : MonoBehaviour
     //called once the user presses enter
     public void Submit()
     {
-        //NOTE: MAY NOT BE NEEDED
+        //Select most related item in the list
+        DDL.SetValueWithoutNotify(0); //select topmost item in current list
+        DDL.RefreshShownValue();
 
+        lastPushed = "";
+        Invoke("DelayedClosingCheck", 0.1f);
+
+        //DisplayListOpen = false;
     }
 
     //called when selected
@@ -117,26 +163,48 @@ public class DDLSearch : MonoBehaviour
         //clear field text automatically
         inputField.text = "";
 
-        //restore defaults
-        RestoreDefaultListValues();
-        
         //open the list
-        DDL.Show();
-        
+        //DDL.Show();
+        DisplayListOpen = true;
     }
 
     //called when deselected
     public void FieldDeselected()
     {
 
+        /*
         //update input field to reflect current dropdown value
-        if (DDL.value > 0 && DDL.options.Count > 0 && DDL.value < DDL.options.Count)
+        if (DDL.options.Count != 0)
         {
             inputField.text = DDL.options[DDL.value].text;
         }
         else
         {
             inputField.text = DDL_Options[0]; //default zero value for this list
+        }
+        
+        DisplayListOpen = false;
+        */
+
+        Invoke("DelayedClosingCheck", 0.1f);
+
+
+    }
+
+    public void DelayedClosingCheck()
+    {
+        if (lastPushed == "")
+        {
+            if (DDL.options.Count != 0)
+            {
+                inputField.text = DDL.options[DDL.value].text;
+            }
+            DisplayListOpen = false;
+        }
+        else
+        {
+            inputField.text = lastPushed;
+            DisplayListOpen = false;
         }
     }
     #endregion
@@ -203,6 +271,9 @@ public class DDLSearch : MonoBehaviour
         //add these options to the list
         DDL.AddOptions(DDL_Options);
 
+        //populate the real display list
+        PopulateDisplayList(DDL.options);
+
         //update input field to reflect current dropdown
         if (inputField.text != DDL.options[DDL.value].text)
         {
@@ -218,21 +289,98 @@ public class DDLSearch : MonoBehaviour
         DDL.ClearOptions();
         DDL.AddOptions(DDL_Options);
         DDL.value = prevVal;
+
+        PopulateDisplayList(DDL.options);
+
     }
     void UpdateListOptions(List<string> NewOptions)
     {
         DDL.ClearOptions();
         DDL.AddOptions(NewOptions);
+        DDL.value = 0;
+        DDL.RefreshShownValue();
+
+        PopulateDisplayList(DDL.options);
     }
     //called when dropdown value changes
     public void UpdateText()
     {
-        //update input field to reflect current dropdown value
-        if (inputField.text != DDL.options[DDL.value].text)
-        {
-            inputField.text = DDL.options[DDL.value].text;
-        }
+
+
     }
     #endregion
+    
+    #region DisplayList
+    public void PopulateDisplayList(List<TMP_Dropdown.OptionData> list)
+    {
+        //clear the reference list
+        DisplayListOptions.Clear();
+        //destroy all of the options created previously
+        if(Options.Count != 0)
+        {
+            foreach(GameObject go in Options)
+            {
+                Destroy(go.gameObject);
+            }
+        }
 
+        //populate the reference list
+        foreach (TMP_Dropdown.OptionData optionData in list)
+        {
+            DisplayListOptions.Add(optionData.text);
+        }
+
+        //instantiate the options
+        foreach(string s in DisplayListOptions)
+        {
+            GameObject option = Instantiate(Template);
+            option.GetComponentInChildren<TMP_Text>().SetText(s);
+            option.transform.SetParent(Content);
+            option.SetActive(true);
+            option.GetComponent<OptionTag>().s = s;
+            Options.Add(option);
+        }
+    }
+
+    public void OptionSelected(string s)
+    {
+        //grab the option selected and use it!
+        inputField.text = s;
+
+        //find the value on the list
+        int i = 0;
+        int value = 0;
+        foreach(TMP_Dropdown.OptionData optionData in DDL.options)
+        {
+            if(optionData.text == s)
+            {
+                //match!
+                //grab this value
+                value = i;
+            }
+            i++;
+        }
+
+
+        //restore the list
+        RestoreDefaultListValues();
+
+        //sets the value to the one selected on the backend
+        DDL.SetValueWithoutNotify(value);
+        DDL.RefreshShownValue();
+        lastPushed = s;
+        DisplayListOpen = false;
+    }
+
+    public void SelectPressed()
+    {
+        DisplayListOpen = !DisplayListOpen;
+        if (DisplayListOpen)
+        {
+            RestoreDefaultListValues();
+        }
+
+        lastPushed = "";
+    }
+    #endregion
 }
