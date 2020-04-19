@@ -20,42 +20,64 @@ public class DDLSearch : MonoBehaviour
     [Header("Filtering Using Monster:")]
     [SerializeField] bool filterUsingMonster;
     [SerializeField] MonsterName monsterReference;
-    List<string> DDL_Options;
+    List<string> DDL_OptionsLibrary;
 
     TMP_InputField inputField;
     bool fieldSelected = false;
-    TMP_Dropdown DDL;
 
-    [Header("List Info")]
+    [Header("List Info"), DisplayWithoutEdit()]
+    public int value; //this is the value of the selection within the displayed options
     [DisplayWithoutEdit()]
-    bool DisplayListOpen = false;
+    public int masterListValue; //use this to reference the master list when evaluating a selection
+
     [SerializeField] GameObject DisplayList; //using this to override the DDL because it sucks :D
     [SerializeField] Transform Content;
-    public List<string> DisplayListOptions; //use this for debugging
-    [SerializeField] Button SelectButton;
+    [SerializeField] Button SelectButton; //button toggle
+    public bool DisplayListOpen = false;
+
+    [Header("Option Info")]
     [SerializeField] GameObject Template; //uses template for options to select in list
+    public Color defaultColor;
+    public Color selectedColor;
+
+    [Header("Debugging")]
+    public List<string> DisplayListOptions; //use this for debugging
+    public bool clickedOnHandle = false;
+
     List<GameObject> Options;
     string lastPushed;
+
+    ScrollRect scrollRect;
+    float moveDist;
 
     void Awake()
     {
         //search children for input field and drop down
         inputField = this.gameObject.GetComponentInChildren<TMP_InputField>();
-        DDL = this.gameObject.GetComponentInChildren<TMP_Dropdown>();
 
         //Make a list in memory as dropdown options to be populated and referenced later as a master list
-        DDL_Options = new List<string>();
+        DDL_OptionsLibrary = new List<string>();
 
+        //this is the shrinkable list of displayed options as strings
+        DisplayListOptions = new List<string>();
+
+        //these are the actual options objects in the displayed list
         Options = new List<GameObject>();
 
-        DisplayListOptions = new List<string>();
+        //grab scroll rect for later use
+        scrollRect = DisplayList.GetComponent<ScrollRect>();
+
+        //grab height of one element
+        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y;
+
+
     }
 
     private void FixedUpdate()
     {
         //run only if we have input field and DDL components
         //...and the lists are populated
-        if (!listLoaded && inputField != null && DDL != null && MonsterDictionary.instance.listLoaded && MoveDictionary.instance.listLoaded)
+        if (!listLoaded && inputField != null && MonsterDictionary.instance.listLoaded && MoveDictionary.instance.listLoaded)
         {
             InitializeDropdownList();
         }
@@ -65,6 +87,7 @@ public class DDLSearch : MonoBehaviour
             FilterSearch(inputField.text);
         }
 
+        //opening and closing of the list, boolean acts as listener
         if (DisplayListOpen)
         {
             DisplayList.SetActive(true);
@@ -73,6 +96,60 @@ public class DDLSearch : MonoBehaviour
         {
             DisplayList.SetActive(false);
         }
+
+        //arrow key interactions
+        if (DisplayListOpen && Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            scrollRect.verticalScrollbar.interactable = false;
+            if (value == DisplayListOptions.Count)
+            {
+                //index looped past, so reset
+                value = 0;
+            }
+            else
+            {
+                //increment the value down the list
+                value++;
+            }
+            //update display
+            SetTextFieldToSelected();
+            HighlightSelected();
+
+            //set normalized position
+            scrollRect.normalizedPosition = new Vector2(0, 1-(value * moveDist) / Content.GetComponent<RectTransform>().sizeDelta.y);
+
+            scrollRect.verticalScrollbar.interactable = true;
+        }
+        if (DisplayListOpen && Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            scrollRect.verticalScrollbar.interactable = false;
+            if (value == 0)
+            {
+                //index looped past, so reset
+                value = DisplayListOptions.Count - 1;
+            }
+            else
+            {
+                //increment the value up the list
+                value--;
+            }
+            //update display
+            SetTextFieldToSelected();
+            HighlightSelected();
+
+            //set normalized position
+            scrollRect.normalizedPosition = new Vector2(0, 1-(value * moveDist) / Content.GetComponent<RectTransform>().sizeDelta.y);
+
+            scrollRect.verticalScrollbar.interactable = true;
+        }
+
+        //force submit if select button was used to open the list instead
+        //and the user pressed enter
+        if (DisplayListOpen && Input.GetKeyDown(KeyCode.Return))
+        {
+            Submit();
+        }
+
     }
 
     #region Search Filter
@@ -82,7 +159,7 @@ public class DDLSearch : MonoBehaviour
         List<string> newOptions = new List<string>();
 
         //sort new temp options strings based on typed text
-        foreach (string s in DDL_Options)
+        foreach (string s in DDL_OptionsLibrary)
         {
             bool match = false;
             int matchingChars = 0;
@@ -117,8 +194,8 @@ public class DDLSearch : MonoBehaviour
         //update the list
         UpdateListOptions(newOptions);
 
-        //DDL.Show();
-        //DisplayListOpen = true;
+        //highlight the selection
+        Invoke("HighlightSelected", 0.1f);
 
         fieldSelected = false;
 
@@ -129,31 +206,51 @@ public class DDLSearch : MonoBehaviour
     //called OnValueChanged from input field
     public void UpdateFilter()
     {
-        if(DDL.options.Count != 0)
+        //open the list if the input field is not displaying the current selection or the topmost selection
+        if (!DisplayListOpen && inputField.text != DisplayListOptions[0] && inputField.text != DisplayListOptions[value])
         {
-            if (inputField.text != "" && inputField.text != DDL_Options[0] && inputField.text != DDL.options[DDL.value].text)
+            DisplayListOpen = true;
+        }
+        //sanity check for resizing list
+        if (DisplayListOptions.Count != 0 && value < DisplayListOptions.Count)
+        {
+            /*only update the search filter if:
+                * --The inputField is not empty
+                * --The inputField is not already displaying the topmost item
+                * --The inputField is not already displaying the selected item
+            */
+            if (inputField.text != "" && inputField.text != DisplayListOptions[0] && inputField.text != DisplayListOptions[value])
             {
                 fieldSelected = true;
             }
         }
-
+        else
+        {
+            //if the value is greater than the count of display options, default to 0
+            value = 0;
+        }
+        //if we backspace, and the list is empty, restore it to default
         if (inputField.text == "")
         {
             RestoreDefaultListValues();
+
+            //still highlight this in case list opens
+            Invoke("HighlightSelected", 0.1f);
         }
+
+
     }
 
     //called once the user presses enter
     public void Submit()
     {
-        //Select most related item in the list
-        DDL.SetValueWithoutNotify(0); //select topmost item in current list
-        DDL.RefreshShownValue();
-
-        lastPushed = "";
+        //Select most related item in the list if that isn't already selected, and the list isn't zero
+        if(DisplayListOptions.Count != 0 && value < DisplayListOptions.Count && inputField.text != DisplayListOptions[value])
+        {
+            value = 0; //select topmost item in current list
+        }
+        fieldSelected = false;
         Invoke("DelayedClosingCheck", 0.1f);
-
-        //DisplayListOpen = false;
     }
 
     //called when selected
@@ -163,57 +260,49 @@ public class DDLSearch : MonoBehaviour
         //clear field text automatically
         inputField.text = "";
 
+        //restore the default list values
+        RestoreDefaultListValues();
+
         //open the list
-        //DDL.Show();
         DisplayListOpen = true;
+
+        //highlight the selection
+        Invoke("HighlightSelected", 0.1f);
+
     }
 
     //called when deselected
     public void FieldDeselected()
     {
+         
+         fieldSelected = false;
+         Invoke("DelayedClosingCheck", 0.1f);
 
-        /*
-        //update input field to reflect current dropdown value
-        if (DDL.options.Count != 0)
+    }
+
+    public void SetTextFieldToSelected()
+    {
+        if (DisplayListOptions.Count != 0)
         {
-            inputField.text = DDL.options[DDL.value].text;
+            inputField.text = DisplayListOptions[value];
+            //Set the selection index by its index in the master library 
+            //(so it never points to an option that doesn't exist)
+            masterListValue = FindStringIndexInList(DisplayListOptions[value], DDL_OptionsLibrary);
         }
-        else
-        {
-            inputField.text = DDL_Options[0]; //default zero value for this list
-        }
-        
-        DisplayListOpen = false;
-        */
-
-        Invoke("DelayedClosingCheck", 0.1f);
-
-
     }
 
     public void DelayedClosingCheck()
     {
-        if (lastPushed == "")
-        {
-            if (DDL.options.Count != 0)
-            {
-                inputField.text = DDL.options[DDL.value].text;
-            }
-            DisplayListOpen = false;
-        }
-        else
-        {
-            inputField.text = lastPushed;
-            DisplayListOpen = false;
-        }
+
+        SetTextFieldToSelected();
+        DisplayListOpen = false;
+
     }
     #endregion
 
     #region Dropdown List Functions
     void InitializeDropdownList()
     {
-        //Clear the existing options in the list
-        DDL.ClearOptions();
 
         //Populate list with appropriate data
         switch (listType)
@@ -222,7 +311,7 @@ public class DDLSearch : MonoBehaviour
                 //show defined list of all monsters
                 foreach (MonsterName n in Enum.GetValues(typeof(MonsterName)))
                 {
-                    DDL_Options.Add(n.ToString());
+                    DDL_OptionsLibrary.Add(n.ToString());
                 }
 
                 break;
@@ -233,7 +322,7 @@ public class DDLSearch : MonoBehaviour
                     Monster monster = MonsterDictionary.instance.GetMonsterByName(monsterReference);
                     foreach (MoveName n in monster.canLearn)
                     {
-                        DDL_Options.Add(n.ToString());
+                        DDL_OptionsLibrary.Add(n.ToString());
                     }
                 }
                 else
@@ -241,7 +330,7 @@ public class DDLSearch : MonoBehaviour
                     //show defined list of all moves
                     foreach (MoveName n in Enum.GetValues(typeof(MoveName)))
                     {
-                        DDL_Options.Add(n.ToString());
+                        DDL_OptionsLibrary.Add(n.ToString());
                     }
                 }
 
@@ -251,15 +340,15 @@ public class DDLSearch : MonoBehaviour
                 if (filterUsingMonster)
                 {
                     Monster monster = MonsterDictionary.instance.GetMonsterByName(monsterReference);
-                    DDL_Options.Add(monster.trait1.ToString());
-                    DDL_Options.Add(monster.trait2.ToString());
+                    DDL_OptionsLibrary.Add(monster.trait1.ToString());
+                    DDL_OptionsLibrary.Add(monster.trait2.ToString());
                 }
                 else
                 {
                     //show defined list of all traits
                     foreach(MonsterTrait mt in Enum.GetValues(typeof(MonsterTrait)))
                     {
-                        DDL_Options.Add(mt.ToString());
+                        DDL_OptionsLibrary.Add(mt.ToString());
                     }
                 }
 
@@ -268,50 +357,31 @@ public class DDLSearch : MonoBehaviour
                 break;
         }
 
-        //add these options to the list
-        DDL.AddOptions(DDL_Options);
-
-        //populate the real display list
-        PopulateDisplayList(DDL.options);
+        //populate display list
+        PopulateDisplayList(DDL_OptionsLibrary);
 
         //update input field to reflect current dropdown
-        if (inputField.text != DDL.options[DDL.value].text)
-        {
-            inputField.text = DDL.options[DDL.value].text;
-        }
+        SetTextFieldToSelected();
 
         //finished loading our list
         listLoaded = true;
     }
     void RestoreDefaultListValues()
     {
-        int prevVal = DDL.value;
-        DDL.ClearOptions();
-        DDL.AddOptions(DDL_Options);
-        DDL.value = prevVal;
 
-        PopulateDisplayList(DDL.options);
+        PopulateDisplayList(DDL_OptionsLibrary);
 
     }
     void UpdateListOptions(List<string> NewOptions)
     {
-        DDL.ClearOptions();
-        DDL.AddOptions(NewOptions);
-        DDL.value = 0;
-        DDL.RefreshShownValue();
 
-        PopulateDisplayList(DDL.options);
-    }
-    //called when dropdown value changes
-    public void UpdateText()
-    {
-
+        PopulateDisplayList(NewOptions);
 
     }
     #endregion
     
     #region DisplayList
-    public void PopulateDisplayList(List<TMP_Dropdown.OptionData> list)
+    public void PopulateDisplayList(List<string> list)
     {
         //clear the reference list
         DisplayListOptions.Clear();
@@ -325,9 +395,9 @@ public class DDLSearch : MonoBehaviour
         }
 
         //populate the reference list
-        foreach (TMP_Dropdown.OptionData optionData in list)
+        foreach (string optionName in list)
         {
-            DisplayListOptions.Add(optionData.text);
+            DisplayListOptions.Add(optionName);
         }
 
         //instantiate the options
@@ -337,50 +407,73 @@ public class DDLSearch : MonoBehaviour
             option.GetComponentInChildren<TMP_Text>().SetText(s);
             option.transform.SetParent(Content);
             option.SetActive(true);
+            option.GetComponent<Image>().color = defaultColor;
             option.GetComponent<OptionTag>().s = s;
             Options.Add(option);
         }
     }
-
     public void OptionSelected(string s)
     {
-        //grab the option selected and use it!
-        inputField.text = s;
-
-        //find the value on the list
-        int i = 0;
-        int value = 0;
-        foreach(TMP_Dropdown.OptionData optionData in DDL.options)
-        {
-            if(optionData.text == s)
-            {
-                //match!
-                //grab this value
-                value = i;
-            }
-            i++;
-        }
-
-
         //restore the list
         RestoreDefaultListValues();
 
-        //sets the value to the one selected on the backend
-        DDL.SetValueWithoutNotify(value);
-        DDL.RefreshShownValue();
-        lastPushed = s;
+        //set the list value by its index in the displayed list
+        value = FindStringIndexInList(s, DisplayListOptions);
+
+        //set input field to reflect value (this also updates the master list value)
+        SetTextFieldToSelected();
+
+        //highlight the selection once the list is refreshed
+        Invoke("HighlightSelected", 0.1f);
+
         DisplayListOpen = false;
     }
-
     public void SelectPressed()
     {
         DisplayListOpen = !DisplayListOpen;
+        //if the list is opening
         if (DisplayListOpen)
         {
             RestoreDefaultListValues();
+            //highlight the selection once the list is refreshed
+            Invoke("HighlightSelected", 0.1f);
+            SetTextFieldToSelected(); //restore previous selection
+        }
+    }
+    public void HighlightSelected()
+    {
+        //reset all other options colors, set only the one we need
+        //(this could have been a broadcast message, but the mechanic was not working)
+        OptionTag[] tags = Content.gameObject.GetComponentsInChildren<OptionTag>();
+        int ind = 0;
+        foreach(OptionTag tag in tags)
+        {
+            if (ind == value)
+            {
+                tag.SetColor(selectedColor);
+            }
+            else
+            {
+                tag.SetColor(defaultColor);
+            }
+
+            ind++;
         }
 
-        lastPushed = "";
+    }
+    public int FindStringIndexInList(string s, List<string> list)
+    {
+        int i = 0;
+        int ind = 0;
+        foreach(string name in list)
+        {
+            if(s == name)
+            {
+                ind = i;
+            }
+            i++;
+        }
+        return ind;
     }
     #endregion
 }
