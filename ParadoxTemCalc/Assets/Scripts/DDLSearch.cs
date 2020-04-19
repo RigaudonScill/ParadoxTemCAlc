@@ -49,6 +49,8 @@ public class DDLSearch : MonoBehaviour
 
     ScrollRect scrollRect;
     float moveDist;
+    int evenOddTick = 0;
+    int refreshRate = 6;
 
     void Awake()
     {
@@ -70,14 +72,14 @@ public class DDLSearch : MonoBehaviour
         //grab height of one element
         moveDist = Template.GetComponent<RectTransform>().sizeDelta.y;
 
-
+        DisplayList.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.4f);
     }
 
     private void FixedUpdate()
     {
         //run only if we have input field and DDL components
         //...and the lists are populated
-        if (!listLoaded && inputField != null && MonsterDictionary.instance.listLoaded && MoveDictionary.instance.listLoaded)
+        if (!listLoaded && inputField != null && DisplayList != null && MonsterDictionary.instance.listLoaded && MoveDictionary.instance.listLoaded)
         {
             InitializeDropdownList();
         }
@@ -98,7 +100,7 @@ public class DDLSearch : MonoBehaviour
         }
 
         //arrow key interactions
-        if (DisplayListOpen && Input.GetKeyDown(KeyCode.DownArrow))
+        if (DisplayListOpen && Input.GetKey(KeyCode.DownArrow) && evenOddTick % refreshRate == 0)
         {
             scrollRect.verticalScrollbar.interactable = false;
             if (value == DisplayListOptions.Count)
@@ -120,7 +122,7 @@ public class DDLSearch : MonoBehaviour
 
             scrollRect.verticalScrollbar.interactable = true;
         }
-        if (DisplayListOpen && Input.GetKeyDown(KeyCode.UpArrow))
+        if (DisplayListOpen && Input.GetKey(KeyCode.UpArrow) && evenOddTick%refreshRate == 0)
         {
             scrollRect.verticalScrollbar.interactable = false;
             if (value == 0)
@@ -150,6 +152,11 @@ public class DDLSearch : MonoBehaviour
             Submit();
         }
 
+        evenOddTick++;
+        if(evenOddTick > 120)
+        {
+            evenOddTick = 0;
+        }
     }
 
     #region Search Filter
@@ -282,7 +289,7 @@ public class DDLSearch : MonoBehaviour
 
     public void SetTextFieldToSelected()
     {
-        if (DisplayListOptions.Count != 0)
+        if (DisplayListOptions.Count != 0 && value < DisplayListOptions.Count)
         {
             inputField.text = DisplayListOptions[value];
             //Set the selection index by its index in the master library 
