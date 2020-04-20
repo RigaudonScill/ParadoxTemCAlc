@@ -70,7 +70,7 @@ public class DDLSearch : MonoBehaviour
         scrollRect = DisplayList.GetComponent<ScrollRect>();
 
         //grab height of one element
-        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y +0.5f;
+        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y +0.3f;
 
         DisplayList.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.4f);
     }
