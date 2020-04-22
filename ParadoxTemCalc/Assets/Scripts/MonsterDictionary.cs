@@ -143,6 +143,28 @@ namespace UnityEngine
 
     }
 
+    public enum MonsterItem
+    { 
+        None,
+        Chamomile,
+        Coat,
+        EnergyDrink,
+        FireChip,
+        Grease,
+        HandFan,
+        IceCube,
+        LightningRod,
+        Pansunscreen,
+        Pillow,
+        RockShield,
+        ShuineHorn,
+        Snare,
+        Sweatband,
+        Talisman,
+        TucmaMask,
+        Umbrella
+    }
+
     public enum MonsterName
     {
         None,
@@ -237,6 +259,8 @@ public struct Monster
     [DisplayWithoutEdit()]
     public MonsterName evolvesFrom;
     [DisplayWithoutEdit()]
+    public MonsterItem monsterItem;
+    [DisplayWithoutEdit()]
     public MonsterTrait trait1;
     [DisplayWithoutEdit()]
     public MonsterTrait trait2;
@@ -295,6 +319,7 @@ public struct Monster
     public Monster(MonsterName monsterName,
                    string name = "",
                    MonsterName evolvesFrom = MonsterName.None,
+                   MonsterItem monsterItem = MonsterItem.None,
                    MonsterTrait trait1 = MonsterTrait.None,
                    MonsterTrait trait2 = MonsterTrait.None,
                    MonsterType type1 = MonsterType.None,
@@ -326,6 +351,7 @@ public struct Monster
     {
         this.monsterName = monsterName;
         this.evolvesFrom = evolvesFrom;
+        this.monsterItem = monsterItem;
         this.trait1 = trait1;
         this.trait2 = trait2;
         this.type1 = type1;
