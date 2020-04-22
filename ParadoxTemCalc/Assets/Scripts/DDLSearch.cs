@@ -11,7 +11,8 @@ public class DDLSearch : MonoBehaviour
     {
         Monsters,
         Moves,
-        Traits
+        Traits,
+        Items
     }
 
     [SerializeField] ListType listType = ListType.Monsters;
@@ -357,6 +358,14 @@ public class DDLSearch : MonoBehaviour
                     {
                         DDL_OptionsLibrary.Add(mt.ToString());
                     }
+                }
+
+                break;
+            case ListType.Items:
+                //show defined list of all monsters
+                foreach (MonsterItem n in Enum.GetValues(typeof(MonsterItem)))
+                {
+                    DDL_OptionsLibrary.Add(n.ToString());
                 }
 
                 break;
