@@ -37,7 +37,11 @@ public class DDLSearch : MonoBehaviour
     public bool DisplayListOpen = false;
 
     [Header("Option Info")]
-    [SerializeField] GameObject Template; //uses template for options to select in list
+    GameObject Template; //template to instantiate
+    [SerializeField] GameObject OptionTemplate; //text button representation
+    [SerializeField] GameObject MonsterTemplate; //template for monster list options
+    [SerializeField] GameObject ItemTemplate; //template for item list options
+
     public Color defaultColor;
     public Color selectedColor;
 
@@ -69,9 +73,6 @@ public class DDLSearch : MonoBehaviour
 
         //grab scroll rect for later use
         scrollRect = DisplayList.GetComponent<ScrollRect>();
-
-        //grab height of one element
-        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y +0.3f;
 
         DisplayList.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.4f);
     }
@@ -313,6 +314,7 @@ public class DDLSearch : MonoBehaviour
     {
 
         //Populate list with appropriate data
+        //NOTE: GRAPHICAL OVERRIDES GO HERE (i.e. hide text field, use different text field or image instead etc.
         switch (listType)
         {
             case ListType.Monsters:
@@ -416,8 +418,31 @@ public class DDLSearch : MonoBehaviour
             DisplayListOptions.Add(optionName);
         }
 
-        //instantiate the options
-        foreach(string s in DisplayListOptions)
+        //override template used based on type
+        switch (listType)
+        {
+            case ListType.Monsters:
+                Template = MonsterTemplate;
+                Content.GetComponent<VerticalLayoutGroup>().spacing = 50f;
+                break;
+            case ListType.Moves:
+                Template = OptionTemplate;
+                break;
+            case ListType.Traits:
+                Template = OptionTemplate;
+                break;
+            case ListType.Items:
+                Template = ItemTemplate;
+                Content.GetComponent<VerticalLayoutGroup>().spacing = 50f;
+                break;
+            default:
+                break;
+        }
+
+        //grab height of one element
+        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y + 0.3f;
+
+        foreach (string s in DisplayListOptions)
         {
             GameObject option = Instantiate(Template);
             option.GetComponentInChildren<TMP_Text>().SetText(s);
