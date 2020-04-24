@@ -404,7 +404,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000022891394
+      value: -0.00000043191534
       objectReference: {fileID: 0}
     - target: {fileID: 1778863885, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1250,7 +1250,7 @@ GameObject:
   - component: {fileID: 166196454}
   - component: {fileID: 166196453}
   m_Layer: 5
-  m_Name: PortraitBorder
+  m_Name: MonsterIconBorder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3950,7 +3950,7 @@ GameObject:
   - component: {fileID: 1051169548}
   - component: {fileID: 1051169547}
   m_Layer: 5
-  m_Name: MonsterPortrait
+  m_Name: MonsterIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5356,7 +5356,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000010113379
+      value: -0.000032874777
       objectReference: {fileID: 0}
     - target: {fileID: 1778863885, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_textInfo.characterCount
@@ -6077,7 +6077,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0000066233792
+      value: 0.000033681896
       objectReference: {fileID: 0}
     - target: {fileID: 2235877074512055933, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}

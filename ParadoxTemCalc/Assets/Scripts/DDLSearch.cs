@@ -378,6 +378,9 @@ public class DDLSearch : MonoBehaviour
         //populate display list
         PopulateDisplayList(DDL_OptionsLibrary);
 
+        //update the options icons
+        UpdateListConfig();
+
         //update input field to reflect current dropdown
         SetTextFieldToSelected();
 
@@ -389,12 +392,20 @@ public class DDLSearch : MonoBehaviour
 
         PopulateDisplayList(DDL_OptionsLibrary);
 
+        UpdateListConfig();
+
     }
     void UpdateListOptions(List<string> NewOptions)
     {
 
         PopulateDisplayList(NewOptions);
 
+        UpdateListConfig();
+
+    }
+    void UpdateListConfig()
+    {
+        
     }
     #endregion
     
@@ -440,7 +451,7 @@ public class DDLSearch : MonoBehaviour
         }
 
         //grab height of one element
-        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y + 0.3f;
+        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y + Content.GetComponent<VerticalLayoutGroup>().spacing;
 
         foreach (string s in DisplayListOptions)
         {
@@ -450,8 +461,74 @@ public class DDLSearch : MonoBehaviour
             option.SetActive(true);
             option.GetComponent<Image>().color = defaultColor;
             option.GetComponent<OptionTag>().s = s;
+            //update icons
+            //Complete Options Configuration
+            switch (listType)
+            {
+                case ListType.Monsters:
+                    Sprite monsterIcon;
+
+                    monsterIcon = MonsterDictionary.instance.FetchIconFromPath(PathType.MonsterPath, s);
+
+                    if (monsterIcon != null)
+                    {
+                        GameObject monsterSearchIcon = option.gameObject.transform.Find("MonsterSearchIcon").gameObject;
+                        GameObject Type1Icon = option.gameObject.transform.Find("Type1").gameObject;
+                        GameObject Type2Icon = option.gameObject.transform.Find("Type2").gameObject;
+
+                        //grab monster reference
+                        Monster M = MonsterDictionary.instance.GetMonsterByString(s);
+
+                        //set icons based on info
+                        monsterSearchIcon.GetComponent<Image>().sprite = monsterIcon;
+                        Type1Icon.GetComponent<Image>().sprite = MonsterDictionary.instance.FetchIconFromPath(PathType.TypePath, M.type1.ToString());
+                        Type2Icon.GetComponent<Image>().sprite = MonsterDictionary.instance.FetchIconFromPath(PathType.TypePath, M.type2.ToString());
+
+                        Debug.Log("Icon: " + monsterSearchIcon.name, monsterSearchIcon.gameObject);
+                    }
+                    else
+                    {
+                        Debug.Log(s + "icon is null");
+                    }
+
+
+                    break;
+                case ListType.Moves:
+                    /*
+                    foreach (MoveName n in Enum.GetValues(typeof(MoveName)))
+                    {
+                        MonsterDictionary.instance.FetchIconFromPath(PathType.MovePath, n.ToString());
+                    }
+                    */
+
+                    break;
+                case ListType.Traits:
+
+
+                    break;
+                case ListType.Items:
+                    Sprite itemIcon;
+
+                    itemIcon = MonsterDictionary.instance.FetchIconFromPath(PathType.ItemPath, s);
+                    if (itemIcon != null)
+                    {
+                        GameObject itemSearchIcon = option.gameObject.transform.Find("ItemSearchIcon").gameObject;
+                        itemSearchIcon.GetComponent<Image>().sprite = itemIcon;
+                    }
+                    else
+                    {
+                        Debug.Log(s + "icon is null");
+                    }
+
+
+                    break;
+                default:
+                    break;
+            }
+
             Options.Add(option);
         }
+
     }
     public void OptionSelected(string s)
     {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System;
 
 namespace UnityEngine
@@ -247,6 +248,15 @@ namespace UnityEngine
         Zenoreth,
         Zephyruff
     }
+
+    public enum PathType
+    {
+        MonsterPath,
+        ItemPath,
+        MovePath,
+        StatusPath,
+        TypePath
+    }
 }
 
 [System.Serializable]
@@ -389,7 +399,55 @@ public class MonsterDictionary : MonoBehaviour
     [DisplayWithoutEdit()]
     public bool listLoaded = false;
 
+
+    //list of actual monsters
     public List<Monster> monsterList;
+
+    string monsterIconPath = "MonsterIcons";
+    string itemIconPath = "ItemIcons";
+    string moveIconPath = "MoveIcons";
+    string statusIconPath = "StatusIcons";
+    string typeIconPath = "TypeIcons";
+
+    public Sprite FetchIconFromPath(PathType pathType, string name)
+    {
+        string path = "";
+
+        switch (pathType)
+        {
+            case PathType.MonsterPath:
+                path = monsterIconPath;
+                break;
+            case PathType.ItemPath:
+                path = itemIconPath;
+                break;
+            case PathType.MovePath:
+                path = moveIconPath;
+                break;
+            case PathType.StatusPath:
+                path = statusIconPath;
+                break;
+            case PathType.TypePath:
+                path = typeIconPath;
+                break;
+            default:
+                break;
+        }
+        path += "/"+name;
+        //Debug.Log(path);
+        Sprite icon = Resources.Load<Sprite>(path);
+        if(icon != null)
+        {
+            //Debug.Log("loaded icon asset: " + icon.name);
+        }
+        else
+        {
+            //Debug.Log("Failed to load icon asset at: " + path);
+        }
+
+            
+        return icon;
+    }
 
     public void FixedUpdate()
     {
@@ -2510,6 +2568,18 @@ public class MonsterDictionary : MonoBehaviour
     public Monster GetMonsterByName(MonsterName name)
     {
         return monsterList[(int)name];
+    }
+
+    public Monster GetMonsterByString(string n)
+    {
+        foreach (MonsterName name in Enum.GetValues(typeof(MonsterName)))
+        {
+            if(n == name.ToString())
+            {
+                return monsterList[(int)name];
+            }
+        }
+        return new Monster(MonsterName.None);
     }
 
     #region instance
