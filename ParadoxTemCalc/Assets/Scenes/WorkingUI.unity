@@ -404,7 +404,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00001310996
+      value: -0.000024954672
       objectReference: {fileID: 0}
     - target: {fileID: 1778863885, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_textInfo.characterCount
@@ -659,18 +659,23 @@ PrefabInstance:
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: listType
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: filterUsingMonster
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: monsterReference
-      value: 0
+      value: 29
       objectReference: {fileID: 0}
+    - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
+        type: 3}
+      propertyPath: monsterPortraitLinkObject
+      value: 
+      objectReference: {fileID: 1290837694}
     - target: {fileID: 8033187806769018686, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -3425,7 +3430,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00005261643
+      value: -0.00007515476
       objectReference: {fileID: 0}
     - target: {fileID: 1778863885, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_textInfo.characterCount
@@ -3692,6 +3697,11 @@ PrefabInstance:
       propertyPath: filterUsingMonster
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
+        type: 3}
+      propertyPath: monsterPortraitLinkObject
+      value: 
+      objectReference: {fileID: 1290837694}
     - target: {fileID: 8033187806769018686, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -4377,6 +4387,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1284873483}
   m_CullTransparentMesh: 0
+--- !u!1 &1290837694 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7947156260379710205, guid: 05c95fd06a5ae6449bdcea689b109709,
+    type: 3}
+  m_PrefabInstance: {fileID: 697865235607691375}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1326518245
 GameObject:
   m_ObjectHideFlags: 0
@@ -5357,7 +5373,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000109760964
+      value: -0.000078686295
       objectReference: {fileID: 0}
     - target: {fileID: 1778863885, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_textInfo.characterCount
@@ -5612,7 +5628,7 @@ PrefabInstance:
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: listType
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
@@ -5624,6 +5640,11 @@ PrefabInstance:
       propertyPath: monsterReference
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
+        type: 3}
+      propertyPath: monsterPortraitLinkObject
+      value: 
+      objectReference: {fileID: 1290837694}
     - target: {fileID: 8033187806769018686, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -6078,7 +6099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1490724187, guid: 7ff33e79e99ac324ca69c4a2e2f8985c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00001555524
+      value: -0.00003733776
       objectReference: {fileID: 0}
     - target: {fileID: 2235877074512055933, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
@@ -6298,18 +6319,23 @@ PrefabInstance:
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: listType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: filterUsingMonster
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: monsterReference
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8033187806498246115, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
+        type: 3}
+      propertyPath: monsterPortraitLinkObject
+      value: 
+      objectReference: {fileID: 1290837694}
     - target: {fileID: 8688367659502295204, guid: 7ff33e79e99ac324ca69c4a2e2f8985c,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -7115,7 +7141,7 @@ PrefabInstance:
     - target: {fileID: 86242653913299527, guid: 05c95fd06a5ae6449bdcea689b109709,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000061172905
+      value: -0.00007358871
       objectReference: {fileID: 0}
     - target: {fileID: 86242655338656635, guid: 05c95fd06a5ae6449bdcea689b109709,
         type: 3}

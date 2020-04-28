@@ -25,6 +25,11 @@ public class DDLSearch : MonoBehaviour
     public bool listLoaded = false;
     [Header("Filtering Using Monster:")]
     [SerializeField] bool filterUsingMonster;
+    //get reference from portrait dropdown and place it here
+    // |
+    // |
+    // V
+    //[SerializeField] GameObject monsterPortraitLinkObject;
     [SerializeField] MonsterName monsterReference;
     List<string> DDL_OptionsLibrary;
 
@@ -322,6 +327,11 @@ public class DDLSearch : MonoBehaviour
                 monsterPortrait.GetComponent<Image>().sprite = MonsterDictionary.instance.FetchIconFromPath(PathType.MonsterPath, DDL_OptionsLibrary[masterListValue]);
                 monsterPortraitName.text = DDL_OptionsLibrary[masterListValue];
             }
+            if (!portraitOnly)
+            {
+                //TODO:
+                //monsterReference = monsterPortraitLinkObject.GetComponent<DDLSearch>().monsterPortraitName;
+            }
         }
     }
 
@@ -467,7 +477,7 @@ public class DDLSearch : MonoBehaviour
                 Template = MonsterTemplate;
                 if (portraitOnly)
                 {
-                    Content.GetComponent<GridLayoutGroup>().spacing = new Vector2(12f, 50f);
+                    Content.GetComponent<GridLayoutGroup>().spacing = new Vector2(29f, 50f);
                 }
                 else
                 {
@@ -484,7 +494,7 @@ public class DDLSearch : MonoBehaviour
                 Template = ItemTemplate;
                 if (portraitOnly)
                 {
-                    Content.GetComponent<GridLayoutGroup>().spacing = new Vector2(12f, 50f);
+                    Content.GetComponent<GridLayoutGroup>().spacing = new Vector2(29f, 50f);
                 }
                 else
                 {
