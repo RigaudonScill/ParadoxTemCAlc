@@ -16,6 +16,11 @@ public class DDLSearch : MonoBehaviour
     }
 
     [SerializeField] ListType listType = ListType.Monsters;
+    [Header("Portrait Overrides")]
+    public bool portraitOnly = false;
+    public Button monsterPortrait;
+    public TMP_Text monsterPortraitName;
+
     [DisplayWithoutEdit()]
     public bool listLoaded = false;
     [Header("Filtering Using Monster:")]
@@ -23,7 +28,7 @@ public class DDLSearch : MonoBehaviour
     [SerializeField] MonsterName monsterReference;
     List<string> DDL_OptionsLibrary;
 
-    TMP_InputField inputField;
+    [SerializeField] TMP_InputField inputField;
     bool fieldSelected = false;
 
     [Header("List Info"), DisplayWithoutEdit()]
@@ -59,8 +64,6 @@ public class DDLSearch : MonoBehaviour
 
     void Awake()
     {
-        //search children for input field and drop down
-        inputField = this.gameObject.GetComponentInChildren<TMP_InputField>();
 
         //Make a list in memory as dropdown options to be populated and referenced later as a master list
         DDL_OptionsLibrary = new List<string>();
@@ -75,6 +78,7 @@ public class DDLSearch : MonoBehaviour
         scrollRect = DisplayList.GetComponent<ScrollRect>();
 
         DisplayList.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.4f);
+
     }
 
     private void FixedUpdate()
@@ -119,8 +123,15 @@ public class DDLSearch : MonoBehaviour
             SetTextFieldToSelected();
             HighlightSelected();
 
-            //set normalized position
-            scrollRect.normalizedPosition = new Vector2(0, 1-(value * moveDist) / Content.GetComponent<RectTransform>().sizeDelta.y);
+            if (portraitOnly)
+            {
+
+            }
+            else
+            {
+                //set normalized position
+                scrollRect.normalizedPosition = new Vector2(0, 1 - (value * moveDist) / Content.GetComponent<RectTransform>().sizeDelta.y);
+            }
 
             scrollRect.verticalScrollbar.interactable = true;
         }
@@ -141,8 +152,15 @@ public class DDLSearch : MonoBehaviour
             SetTextFieldToSelected();
             HighlightSelected();
 
-            //set normalized position
-            scrollRect.normalizedPosition = new Vector2(0, 1-(value * moveDist) / Content.GetComponent<RectTransform>().sizeDelta.y);
+            if (portraitOnly)
+            {
+
+            }
+            else
+            {
+                //set normalized position
+                scrollRect.normalizedPosition = new Vector2(0, 1 - (value * moveDist) / Content.GetComponent<RectTransform>().sizeDelta.y);
+            }
 
             scrollRect.verticalScrollbar.interactable = true;
         }
@@ -297,6 +315,13 @@ public class DDLSearch : MonoBehaviour
             //Set the selection index by its index in the master library 
             //(so it never points to an option that doesn't exist)
             masterListValue = FindStringIndexInList(DisplayListOptions[value], DDL_OptionsLibrary);
+
+            //Update the portrait if necessary
+            if (portraitOnly)
+            {
+                monsterPortrait.GetComponent<Image>().sprite = MonsterDictionary.instance.FetchIconFromPath(PathType.MonsterPath, DDL_OptionsLibrary[masterListValue]);
+                monsterPortraitName.text = DDL_OptionsLibrary[masterListValue];
+            }
         }
     }
 
@@ -315,6 +340,12 @@ public class DDLSearch : MonoBehaviour
 
         //Populate list with appropriate data
         //NOTE: GRAPHICAL OVERRIDES GO HERE (i.e. hide text field, use different text field or image instead etc.
+        if (portraitOnly)
+        {
+            SelectButton.gameObject.SetActive(true);
+            inputField.gameObject.SetActive(true);
+        }
+
         switch (listType)
         {
             case ListType.Monsters:
@@ -434,7 +465,14 @@ public class DDLSearch : MonoBehaviour
         {
             case ListType.Monsters:
                 Template = MonsterTemplate;
-                Content.GetComponent<VerticalLayoutGroup>().spacing = 50f;
+                if (portraitOnly)
+                {
+                    Content.GetComponent<GridLayoutGroup>().spacing = new Vector2(12f, 50f);
+                }
+                else
+                {
+                    Content.GetComponent<VerticalLayoutGroup>().spacing = 50f;
+                }
                 break;
             case ListType.Moves:
                 Template = OptionTemplate;
@@ -444,14 +482,29 @@ public class DDLSearch : MonoBehaviour
                 break;
             case ListType.Items:
                 Template = ItemTemplate;
-                Content.GetComponent<VerticalLayoutGroup>().spacing = 50f;
+                if (portraitOnly)
+                {
+                    Content.GetComponent<GridLayoutGroup>().spacing = new Vector2(12f, 50f);
+                }
+                else
+                {
+                    Content.GetComponent<VerticalLayoutGroup>().spacing = 50f;
+                }
                 break;
             default:
                 break;
         }
 
         //grab height of one element
-        moveDist = Template.GetComponent<RectTransform>().sizeDelta.y + Content.GetComponent<VerticalLayoutGroup>().spacing;
+        if (portraitOnly)
+        {
+            moveDist = Template.GetComponent<RectTransform>().sizeDelta.y + Content.GetComponent<GridLayoutGroup>().spacing.y;
+        }
+        else
+        {
+            moveDist = Template.GetComponent<RectTransform>().sizeDelta.y + Content.GetComponent<VerticalLayoutGroup>().spacing;
+        }
+
 
         foreach (string s in DisplayListOptions)
         {
@@ -484,11 +537,39 @@ public class DDLSearch : MonoBehaviour
                         Type1Icon.GetComponent<Image>().sprite = MonsterDictionary.instance.FetchIconFromPath(PathType.TypePath, M.type1.ToString());
                         Type2Icon.GetComponent<Image>().sprite = MonsterDictionary.instance.FetchIconFromPath(PathType.TypePath, M.type2.ToString());
 
-                        Debug.Log("Icon: " + monsterSearchIcon.name, monsterSearchIcon.gameObject);
+                        /*
+                        if(s == "None")
+                        {
+                            monsterSearchIcon.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+                        }
+                        else
+                        {
+                            monsterSearchIcon.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                        }*/
+
+                        if(M.type1.ToString() == "None")
+                        {
+                            Type1Icon.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+                        }
+                        else
+                        {
+                            Type1Icon.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                        }
+
+                        if(M.type2.ToString() == "None")
+                        {
+                            Type2Icon.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+                        }
+                        else
+                        {
+                            Type2Icon.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                        }
+
+                        //Debug.Log("Icon: " + monsterSearchIcon.name, monsterSearchIcon.gameObject);
                     }
                     else
                     {
-                        Debug.Log(s + "icon is null");
+                        //Debug.Log(s + "icon is null");
                     }
 
 
@@ -548,14 +629,29 @@ public class DDLSearch : MonoBehaviour
     }
     public void SelectPressed()
     {
+
         DisplayListOpen = !DisplayListOpen;
+
         //if the list is opening
         if (DisplayListOpen)
         {
+            if (portraitOnly)
+            {
+                SelectButton.gameObject.SetActive(true);
+                inputField.gameObject.SetActive(true);
+            }
             RestoreDefaultListValues();
             //highlight the selection once the list is refreshed
             Invoke("HighlightSelected", 0.1f);
             SetTextFieldToSelected(); //restore previous selection
+        }
+        else
+        {
+            if (portraitOnly)
+            {
+                SelectButton.gameObject.SetActive(false);
+                inputField.gameObject.SetActive(false);
+            }
         }
     }
     public void HighlightSelected()
@@ -577,7 +673,6 @@ public class DDLSearch : MonoBehaviour
 
             ind++;
         }
-
     }
     public int FindStringIndexInList(string s, List<string> list)
     {
